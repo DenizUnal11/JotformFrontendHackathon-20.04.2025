@@ -1,33 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
 import './App.css'
+import { Card } from './components/ui/card';
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  
 
+  const [formData, setFormData] = useState(null);
+
+  const fetchData = () => {
+    const formId = "251074178702960";
+    const apiKey = "b0a76b7ea43d64f463e3f23d530baef9";
+
+    fetch(`https://api.jotform.com/form/${formId}/payment-info?apiKey=${apiKey}`)
+      .then(res => res.json())
+      .then(data => {
+        setFormData(data.content);
+        console.log("Form Items: ", data.content);
+      })
+      .catch(err => console.error("Error:", err));
+  }
+
+  useEffect(() => {
+    fetchData();
+  }
+  , []);
+  
   return (
     <>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {console.log("Form Data: ", formData)}
+          {formData ? (
+            formData.products.map((item, index) => (
+              <div>
+               {item.description}
+              </div>
+            ))
+          ) : (
+            <p>Loading...</p>
+          )}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
