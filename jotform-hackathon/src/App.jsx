@@ -1,40 +1,22 @@
-import { useEffect, useState } from 'react'
-import './App.css'
-import { Card } from './components/ui/card';
-import ProductList from './components/ui/product-list';
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { Toaster } from "./components/ui/toaster"
+import { BasketProvider } from "./context/basket-context"
+import BasketIcon from "./components/basket-icon"
+import Homepage from "./pages/homepage"
+import PaymentPage from "./pages/paymentpage"
 
 function App() {
-  
-
-  const [products, setProducts] = useState(null);
-
-  const fetchData = () => {
-    const formId = "251074178702960";
-    const apiKey = "b0a76b7ea43d64f463e3f23d530baef9";
-
-    fetch(`https://api.jotform.com/form/${formId}/payment-info?apiKey=${apiKey}`)
-      .then(res => res.json())
-      .then(data => {
-        setProducts(data.content.products);
-        console.log("Form Items: ", data.content.products);
-      })
-      .catch(err => console.error("Error:", err));
-  }
-
-  useEffect(() => {
-    fetchData();
-  }
-  , []);
-  
   return (
-    <>
-      <div>
-        <div className="w-screen min-h-screen overflow-hidden">
-          {products ? <ProductList products={products} /> : <p>Loading...</p>}
-        </div>
-      </div>  
-    </>
+    <BasketProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/payment" element={<PaymentPage />} />
+        </Routes>
+        <BasketIcon />
+        <Toaster position="bottom-left"/>
+      </Router>
+    </BasketProvider>
   )
 }
 

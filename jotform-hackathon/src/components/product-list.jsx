@@ -36,7 +36,7 @@ export default function ProductList({ products }) {
 return (
     <div
         ref={containerRef}
-        className="w-[100vw] max-w-[100vw] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 overflow-y-auto max-h-[100vh] p-4 px-[10vw] pt-[5vh] mx-auto"
+        className="w-[100vw] max-w-[100vw] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 overflow-y-auto max-h-[100vh] p-4 px-[10vw] pt-[7vh] mx-auto"
     >
         {products.slice(0, visibleCount).map((product, index) => (
             <ProductCard key={product.pid || index} product={product} />
