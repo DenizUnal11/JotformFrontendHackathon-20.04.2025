@@ -24,16 +24,20 @@ function Homepage() {
   }
   , []);
   
-  return (
+return (
     <>
-      <div>
-        <Filter />
-        <div className="w-screen min-h-screen overflow-hidden">
-          {products ? <ProductList products={products} /> : <p>Loading...</p>}
-        </div>
-      </div>  
+        <div>
+            {/*<Filter />*/}
+            <div className="w-screen min-h-screen overflow-hidden flex items-center justify-center">
+                {products ? (
+                    <ProductList products={products} />
+                ) : (
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+                )}
+            </div>
+        </div>  
     </>
-  )
+)
 }
 
 export default Homepage

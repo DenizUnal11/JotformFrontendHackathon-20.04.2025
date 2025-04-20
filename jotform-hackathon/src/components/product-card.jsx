@@ -1,12 +1,13 @@
 import { useState,useRef } from "react"
 import { Card, CardContent, CardFooter } from "./ui/card"
 import { Button } from "./ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import { Img } from "react-image"
 import { ShoppingCart } from "lucide-react"
 import { useBasket } from "../context/basket-context"
 import { useToast } from "./ui/use-toast"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
+import { Incrementer } from "./incrementer"
 
 export default function ProductCard({ product }) {
   const [quantity, setQuantity] = useState("1")
@@ -78,16 +79,29 @@ export default function ProductCard({ product }) {
       }
     }, [])
 
+    const handleQuantityChange = (value) => {
+      console.log("Selected quantity in parent:", value)
+      setQuantity(value)
+    }
+    
+
   return (
     <Card className="overflow-hidden h-full flex flex-col" ref={cardRef}>
       <div className="relative h-48 bg-gray-100">
-        <img
-          src={imageUrl || "/placeholder.svg"}
-          alt={product.name || "Product"}
-          className="object-contain p-2 w-full h-full"
-          onError={(e) => {
-            e.target.src = "https://via.placeholder.com/200"
-          }}
+        <Img
+          className="object-contain p-2 h-full w-full"
+          src={imageUrl}
+          loader={
+            <div className="flex items-center justify-center h-full w-full">
+              <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-500 animate-spin rounded-full" />
+            </div>
+          }
+          unloader={
+            <img
+              src="https://via.placeholder.com/300x200?text=No+Image"
+              className="h-full w-full object-contain p-2"
+            />
+          }
         />
       </div>
       <CardContent className="pt-4 flex-grow">
@@ -96,20 +110,8 @@ export default function ProductCard({ product }) {
         <p className="text-lg font-bold">${price}</p>
       </CardContent>
       <CardFooter className="flex flex-col gap-2 pt-0">
-        {product.hasQuantity === "1" && (
-          <Select ref = {selectRef}value={quantity} onValueChange={setQuantity}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select quantity" />
-            </SelectTrigger>
-            <SelectContent>
-              {quantityOptions.map((qty) => (
-                <SelectItem key={qty} value={qty}>
-                  {qty}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
+
+          <Incrementer onChange={handleQuantityChange} ></Incrementer>
         <Button className="w-full" onClick={handleAddToBasket}>
           <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Basket
