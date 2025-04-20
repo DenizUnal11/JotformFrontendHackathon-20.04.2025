@@ -11,6 +11,20 @@ Please fill in your information after forking this repository:
 ## Getting Started
 
 To run the project 
+npm install
+npm run dev
+
+
+Tech stack:
+Vite – Fast build tool
+
+React (JS) – UI Library
+
+Tailwind CSS – Utility-first styling
+
+ShadCN/UI – Accessible UI components
+
+GSAP – Animation library
 
 
 ## License
