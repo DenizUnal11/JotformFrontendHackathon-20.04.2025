@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { Card } from './components/ui/card';
+import ProductList from './components/ui/product-list';
 
 
 function App() {
   
 
-  const [formData, setFormData] = useState(null);
+  const [products, setProducts] = useState(null);
 
   const fetchData = () => {
     const formId = "251074178702960";
@@ -15,8 +16,8 @@ function App() {
     fetch(`https://api.jotform.com/form/${formId}/payment-info?apiKey=${apiKey}`)
       .then(res => res.json())
       .then(data => {
-        setFormData(data.content);
-        console.log("Form Items: ", data.content);
+        setProducts(data.content.products);
+        console.log("Form Items: ", data.content.products);
       })
       .catch(err => console.error("Error:", err));
   }
@@ -29,17 +30,10 @@ function App() {
   return (
     <>
       <div>
-        {console.log("Form Data: ", formData)}
-          {formData ? (
-            formData.products.map((item, index) => (
-              <div>
-               {item.description}
-              </div>
-            ))
-          ) : (
-            <p>Loading...</p>
-          )}
-      </div>
+        <div className="w-screen min-h-screen overflow-hidden">
+          {products ? <ProductList products={products} /> : <p>Loading...</p>}
+        </div>
+      </div>  
     </>
   )
 }
