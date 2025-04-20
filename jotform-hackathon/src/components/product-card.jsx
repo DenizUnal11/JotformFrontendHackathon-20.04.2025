@@ -31,7 +31,7 @@ export default function ProductCard({ product }) {
   }
 
   // Parse images
-  let imageUrl = "https://via.placeholder.com/200"
+  let imageUrl = "https://zinde.org.tr/wp-content/uploads/2023/08/no-image.jpg"
   try {
     if (product.images) {
       const images = JSON.parse(product.images)
@@ -98,7 +98,7 @@ export default function ProductCard({ product }) {
           }
           unloader={
             <img
-              src="https://via.placeholder.com/300x200?text=No+Image"
+              src="https://zinde.org.tr/wp-content/uploads/2023/08/no-image.jpg"
               className="h-full w-full object-contain p-2"
             />
           }

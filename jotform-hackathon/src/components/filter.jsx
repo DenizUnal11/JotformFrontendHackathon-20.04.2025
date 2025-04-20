@@ -1,97 +1,122 @@
+import { useState, useEffect } from "react"
+import { Search, SlidersHorizontal, X } from "lucide-react"
+import { Button } from "./ui/button"
+import { Slider } from "./ui/slider"
 
-//taken from here, date: 20.04.2025
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/iumiqYMzRpZ
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
+export default function FilterBar({ products, onFilterChange }) {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [priceRange, setPriceRange] = useState([0, 100])
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [maxPrice, setMaxPrice] = useState(100)
 
+  // Set max price on load
+  useEffect(() => {
+    if (products.length > 0) {
+      const highestPrice = Math.max(...products.map((p) => parseFloat(p.price || "0")))
+      setMaxPrice(Math.ceil(highestPrice))
+      setPriceRange([0, Math.ceil(highestPrice)])
+    }
+  }, [products])
 
+  // Apply filters
+  useEffect(() => {
+    onFilterChange({
+      searchTerm,
+      minPrice: priceRange[0],
+      maxPrice: priceRange[1],
+    })
+  }, [searchTerm, priceRange])
 
-import { useState } from "react"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Slider } from "@/components/ui/slider"
-import { Button } from "@/components/ui/button"
-
-export default function Filter() {
-  const [filters, setFilters] = useState({
-    keyword: "",
-    dateRange: { start: null, end: null },
-    categories: [],
-    tags: [],
-    priceRange: [0, 1000],
-    additionalFilters: {
-      inStock: false,
-      onSale: false,
-    },
-  })
-
-  const handleFilterChange = (type, value) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [type]: value,
-    }))
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value)
   }
 
-  const handleClearFilters = () => {
-    setFilters({
-      keyword: "",
-      dateRange: { start: null, end: null },
-      categories: [],
-      tags: [],
-      priceRange: [0, 1000],
-      additionalFilters: {
-        inStock: false,
-        onSale: false,
-      },
+  const handlePriceChange = (value) => {
+    setPriceRange(value)
+  }
+
+  const clearFilters = () => {
+    setSearchTerm("")
+    setPriceRange([0, maxPrice])
+    onFilterChange({
+      searchTerm: "",
+      minPrice: 0,
+      maxPrice,
     })
   }
 
-  const handleApplyFilters = () => {
-    console.log("Applying filters:", filters)
-  }
-
   return (
-    <div className="bg-background p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Advanced Search</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Keyword Input */}
-        <div>
-          <Label htmlFor="keyword">Keyword</Label>
-          <Input
-            id="keyword"
-            type="text"
-            placeholder="Search by keyword"
-            value={filters.keyword}
-            onChange={(e) => handleFilterChange("keyword", e.target.value)}
-          />
-        </div>
+    <div className="mb-6 flex justify-center py-6 bg-background shadow-sm -muted-foreground">
+      <div className="w-full max-w-5xl space-y-4 fixed">
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
+          {/* Search Input */}
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="pl-10 pr-4 py-2 w-full rounded-md border border-input bg-background text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
+          </div>
 
-        {/* Price Range */}
-        <div>
-          <Label htmlFor="price">Price Range</Label>
-          <Slider
-            id="price"
-            min={0}
-            max={1000}
-            step={10}
-            value={filters.priceRange}
-            onValueChange={(value) => handleFilterChange("priceRange", value)}
-          />
-          <div className="flex justify-between text-sm text-muted-foreground mt-1">
-            <span>${filters.priceRange[0]}</span>
-            <span>${filters.priceRange[1]}</span>
+          {/* Filter toggle on mobile */}
+          <Button
+            variant="outline"
+            className="md:hidden flex items-center gap-2"
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            Filters
+          </Button>
+
+          {/* Desktop Price Range */}
+          <div className="hidden md:flex items-center gap-4 w-full max-w-lg">
+            <div className="flex items-center gap-2 flex-grow">
+              <label className="text-sm font-medium whitespace-nowrap">
+                Price: ${priceRange[0]} - ${priceRange[1]}
+              </label>
+              <Slider
+                value={priceRange}
+                min={0}
+                max={maxPrice}
+                step={1}
+                onValueChange={handlePriceChange}
+                className="w-full"
+                thumbClassName="bg-primary h-4 w-4 rounded-full"
+              />
+            </div>
+
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="text-sm whitespace-nowrap">
+              <X className="h-4 w-4 mr-1" /> Clear
+            </Button>
           </div>
         </div>
-      </div>
 
-      {/* Footer */}
-      <div className="flex justify-end gap-4 mt-6">
-        <Button variant="outline" onClick={handleClearFilters}>
-          Clear All
-        </Button>
-        <Button onClick={handleApplyFilters}>Apply Filters</Button>
+        {/* Mobile Filter Panel */}
+        {isFilterOpen && (
+          <div className="md:hidden mt-4 p-4 border rounded-md bg-background shadow-sm space-y-4">
+            <div>
+              <label className="text-sm font-medium block mb-1">
+                Price Range: ${priceRange[0]} - ${priceRange[1]}
+              </label>
+              <Slider
+                value={priceRange}
+                min={0}
+                max={maxPrice}
+                step={1}
+                onValueChange={handlePriceChange}
+                className="w-full"
+                thumbClassName="bg-primary h-4 w-4 rounded-full"
+              />
+            </div>
+
+            <Button variant="outline" size="sm" onClick={clearFilters} className="w-full">
+              <X className="h-4 w-4 mr-1" /> Clear Filters
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )
